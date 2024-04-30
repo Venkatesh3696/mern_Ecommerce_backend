@@ -6,29 +6,28 @@ export const registerController = async (req, res) => {
   try {
     const { name, email, password, phone, address } = req.body;
     if (!name) {
-      return res.status(406).send({ error: "Name is required" });
+      return res.status(406).send({ message: "Name is required" });
     }
     if (!email) {
-      return res.status(406).send({ error: "Email is required" });
+      return res.status(406).send({ message: "Email is required" });
     }
     if (!password) {
-      return res.status(406).send({ error: "Password is required" });
+      return res.status(406).send({ message: "Password is required" });
     }
     if (!address) {
-      return res.status(406).send({ error: "Address is required" });
+      return res.status(406).send({ message: "Address is required" });
     }
     if (!phone) {
-      return res.status(406).send({ error: "Phone is required" });
+      return res.status(406).send({ message: "Phone is required" });
     }
 
     const existingUser = await UserModel.findOne({ email });
     if (existingUser) {
       return res
-        .status(200)
-        .send({ success: true, message: "User already exists. please Login" });
+        .status(401)
+        .send({ success: false, message: "User already exists. please Login" });
     }
     const hashedPassword = await hashPassword(password);
-    console.log("hashed password", hashedPassword);
 
     const user = await new UserModel({
       name,
@@ -56,6 +55,7 @@ export const registerController = async (req, res) => {
 export const loginController = async (req, res) => {
   try {
     const { email, password } = req.body;
+    console.log(email, password);
     if (!email || !password) {
       return res
         .status(406)
@@ -70,7 +70,7 @@ export const loginController = async (req, res) => {
     }
     const match = await comparePassword(password, user.password);
     if (!match) {
-      return res.status(200).send({
+      return res.status(401).send({
         success: false,
         message: "Invalid password",
       });
