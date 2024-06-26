@@ -9,6 +9,7 @@ export const requireSignIn = async (req, res, next) => {
       req.headers.authorization,
       process.env.JWT_SECRET
     );
+    console.log("decoded=>>", decoded);
     req.user = decoded;
     next();
   } catch (error) {
@@ -18,9 +19,11 @@ export const requireSignIn = async (req, res, next) => {
 
 export const isAdmin = async (req, res, next) => {
   try {
+    console.log("in isAdmin");
     const user = await UserModel.findById(req.user._id);
     if (user.role !== 1) {
-      return res.status(401).send({
+      console.log("is admin");
+      return res.send({
         success: false,
         message: "Admin resource access denied",
       });
